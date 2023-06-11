@@ -1,0 +1,170 @@
+import asyncio
+from pyppeteer import launch
+from pyppeteer.browser import Browser
+from pyppeteer.page import Page
+from flask import *
+
+import json
+import time
+
+json_path = "rpilocator_ja.json"
+
+product_description = {
+    # ssci
+    "RPI-ZERO": "Raspberry Pi Zero v1.3",
+    "RPI-ZERO-W": "Raspberry Pi Zero W",
+    "RPI-ZERO-WH": "Raspberry Pi Zero WH",
+    "RPI-SC0510": "Raspberry Pi Zero 2 W",
+    "RPI-3A+": "Raspberry Pi 3 Model A+ 512MB RAM",
+    "ELEMENT14-2842228": "Raspberry Pi 3 Model B+ 1GB RAM",
+    "RASPBERRY-PI-4-MODEL-B-1GB": "Raspberry Pi 4 Model B 1GB RAM",
+    "RASPBERRY-PI-4-MODEL-B-2GB": "Raspberry Pi 4 Model B 2GB RAM",
+    "ELEMENT14-3051891": "Raspberry Pi 4 Model B 4GB RAM",
+    "RASPBERRY-PI-4-MODEL-B-8GB": "Raspberry Pi 4 Model B 8GB RAM",
+    # ksy
+    "RASPIZERO13": "Raspberry Pi Zero v1.3",
+    "RASPI0W11": "Raspberry Pi Zero W",
+    "RASPIZWHSC0065": "Raspberry Pi Zero WH",
+    "SC0510": "Raspberry Pi Zero 2 W",
+    "RASPI3A1811853": "Raspberry Pi 3 Model A+ 512MB RAM",
+    "137-3331": "Raspberry Pi 3 Model B+ 1GB RAM",
+    "2842228": "Raspberry Pi 3 Model B+ 1GB RAM",
+    "RASPI421874652": "Raspberry Pi 4 Model B 2GB RAM",
+    "RASPI44SC0194#": "Raspberry Pi 4 Model B 4GB RAM",
+    "RASPI483051891": "Raspberry Pi 4 Model B 4GB RAM",
+    "3369503": "Raspberry Pi 4 Model B 8GB RAM",
+    "RASPI48SC0195#": "Raspberry Pi 4 Model B 8GB RAM",
+}
+
+ksy_watch_list = [
+    219, # Zero W
+    406, # Zero WH
+    222, # Zero V1.3
+    849, # Zero 2W
+    512, # 3A+
+    435, # 3B+
+    779, # 3B+/Element14
+    723, # 4B 4GB/Element14
+    552, # 4B 8GB/Element14
+    498, # 4B 4GB
+    549 # 4B 8GB
+]
+eval_ksy = """() => {
+    let price_length = document.getElementById('dt_Price').innerText.length - 1;
+    return {
+        product_code: document.getElementById('dt_Model').innerText,
+        stock: document.getElementById('dt_Stock').innerText,
+        price: document.getElementById('dt_Price').innerText.replace('円', '').replace(',', '').replace('価格未定', '0'),
+    }
+}"""
+ssci_watch_list = [
+    3200, # Zero W
+    3646, # Zero WH
+    3190, # Zero V1.3
+    7600, # Zero 2W
+    4110, # 3A+
+    #3850, # 3B+(Suspended)
+    5680, # 4B 4GB/Element14
+    6370, # 4B 8GB
+]
+eval_ssci = """() => {
+    return {
+        product_code: document.getElementsByClassName('product-details__block')[6].innerText.split(': ')[1],
+        stock: document.getElementsByClassName('product-details__block')[8].innerText.split(': ')[1],
+        price: document.getElementsByClassName('money')[0].innerText.substring(1).trim().replace(',', ''),
+    }
+}"""
+
+def load_list():
+    with open(json_path) as f:
+        raw = f.read()
+    return json.loads(raw)
+
+def update_list(vendor, pid, url, info):
+    data = load_list()
+    for c,i in enumerate(data['data']):
+        if i[3] == vendor and i[7] == pid:
+            # 既存のやつを消す
+            data['data'].pop(c)
+            break
+    # 具体的な在庫数は求めないため、Booleanにする
+    stock = "No"
+    last_stock = ""
+    if 'stock' in info and int(info['stock']):
+        stock = "Yes"
+        last_stock = time.strftime("%Y-%m-%d")
+    data['data'].append([
+        info['product_code'],
+        product_description[info['product_code']],
+        url,
+        vendor,
+        stock,
+        last_stock,
+        info['price'],
+        pid
+    ])
+    output = json.dumps(data)
+    with open(json_path, 'w') as f:
+        f.write(output)
+
+async def crawl(url, evaluate, wait = 0):
+    browser: Browser = await launch(
+        handleSIGINT=False,
+        handleSIGTERM=False,
+        handleSIGHUP=False
+    )
+    page: Page = await browser.newPage()
+    await page.goto(url)
+    if wait:
+        await page.waitFor(wait)
+    data = await page.evaluate(evaluate)
+    await browser.close()
+    return data
+
+app = Flask(__name__)
+
+@app.route("/", methods=["GET"])
+def root():
+    return jsonify(load_list()), 200
+
+@app.route("/rpilocator_ja.json", methods=["GET"])
+def return_json():
+    return jsonify(load_list()), 200
+
+@app.route("/crawl/all", methods=["GET"])
+def crawl_all():
+    try:
+        for i in ksy_watch_list:
+            print(i)
+            url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{i}/pdp.open/{i}"
+            result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ksy, wait = 3000))
+            update_list('KSY', i, url, result)
+        for i in ssci_watch_list:
+            print(i)
+            url = f"https://www.switch-science.com/products/{i}"
+            result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ssci))
+            update_list('Switch Science', i, url, result)
+        return "OK", 200
+    except:
+        return "Error at %s"%i, 500
+
+#@app.route("/crawl/ksy/<int:product_id>", methods=["GET"])
+#def ksy(product_id):
+#    if not product_id in ksy_watch_list:
+#        return "It doesn't watching.", 400
+#    url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{product_id}/pdp.open/{product_id}"
+#    result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ksy, wait = 3000))
+#    update_list('KSY', product_id, url, result)
+#    return jsonify(result), 200
+#
+#@app.route("/crawl/ssci/<int:product_id>", methods=["GET"])
+#def ssci(product_id):
+#    if not product_id in ssci_watch_list:
+#        return "It doesn't watching.", 400
+#    url = f"https://www.switch-science.com/products/{product_id}"
+#    result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ssci))
+#    update_list('Switch Science', product_id, url, result)
+#    return jsonify(result), 200
+
+if __name__ == "__main__":
+    app.run(debug=False, host='0.0.0.0', port=31415, threaded=True)

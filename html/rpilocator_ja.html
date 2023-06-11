@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="ラズピッピ在庫監視(日本)">
+	<title>ラズピッピ在庫監視(日本)</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">ラズピッピ在庫監視(日本)</span>
+      </a>
+    </header>
+  </div>
+
+  <div class="container">
+    <table id="locator_ja" class="table">
+        <thead>
+            <th>SKU</th>
+            <th>Description</th>
+            <th>Link</th>
+            <th>Vendor</th>
+            <th>Stock</th>
+            <th>Last Stock</th>
+            <th>Price (JPY,TAX Included)</th>
+        </thead>
+    </table>
+  </div>
+
+  <div class="container">
+    <h2 class="mt-5">ヘルプ</h2>
+    <h3>監視対象モデルについて</h3>
+    <ul><li>Raspberry Pi Zero (V1.3, W, WH, 2W)</li>
+        <li>Raspberry Pi 3+ (B, A)</li>
+        <li>Raspberry Pi 4B (1GB, 2GB, 4GB, 8GB)</li></ul>
+    <p>Element14版、Trading直接版両方を一応見ています</p>
+    <h3>チェックの間隔について</h3>
+    <p>半日に一回くらいでチェックしています</p>
+    <h3>表の生データがほしい</h3>
+    <p><a href="rpilocator_ja.json">JSONはこちら</a></p>
+    <h3>サービスの提供期間</h3>
+    <p>どのモデルも在庫が潤沢になるか、両社からデータ収集を断られるか、本家のrpilocatorで両社のデータ収集に対応するかのいずれかがあった場合終了します</p>
+    <h3>問い合わせ先</h3>
+    <p><a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">Mastodon</a>か<a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">Twitter</a>へ</p>
+  </div>
+
+  <div class="container">
+      <footer class="pt-4 px-3 px-md-0 my-2 text-muted border-top">
+      <p>Inspired from <a href="https://rpilocator.com/" target="_blank" rel="noopener">rpilocator</a>.</p>
+      <p><a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">@Akkiesoft</a></p>
+    </footer>
+  </div>
+</body>
+<script>
+let table = new DataTable('#locator_ja', {
+    responsive: true,
+    pageLength: 50,
+    ajax: {
+        url: 'http://192.168.29.113:31415/',
+        dataSrc: function(d) {
+             for (var i = 0 ; i < d.data.length ; i++ ) {
+                 d.data[i][2] = '<a href="' + d.data[i][2] + '" target="_blank" rel="nooperner">Link</a>';
+             }
+             return d.data;
+        },
+    },
+    createdRow: function(row, d, dataIndex) {
+        if (d[4] == "Yes") {
+            $(row).addClass('table-success');
+        }
+    },
+    order: [[4, 'desc'], [5, 'desc'], [1, 'desc']],
+});
+</script>
+</html>

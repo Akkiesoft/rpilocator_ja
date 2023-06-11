@@ -1,0 +1,9 @@
+version: '3'
+services:
+  rpilocator_ja:
+    build: .
+    restart: always
+    volumes:
+      - ./rpilocator_ja.json:/usr/src/app/rpilocator_ja.json
+    ports:
+      - '0.0.0.0:31415:31415'
