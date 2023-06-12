@@ -1,9 +1,5 @@
-import asyncio
-from pyppeteer import launch
-from pyppeteer.browser import Browser
-from pyppeteer.page import Page
+from playwright.sync_api import sync_playwright
 from flask import *
-
 import json
 import time
 
@@ -64,6 +60,8 @@ ssci_watch_list = [
     7600, # Zero 2W
     4110, # 3A+
     #3850, # 3B+(Suspended)
+    5682, # 4B 1GB
+    5681, # 4B 2GB
     5680, # 4B 4GB/Element14
     6370, # 4B 8GB
 ]
@@ -107,18 +105,19 @@ def update_list(vendor, pid, url, info):
     with open(json_path, 'w') as f:
         f.write(output)
 
-async def crawl(url, evaluate, wait = 0):
-    browser: Browser = await launch(
-        handleSIGINT=False,
-        handleSIGTERM=False,
-        handleSIGHUP=False
-    )
-    page: Page = await browser.newPage()
-    await page.goto(url)
-    if wait:
-        await page.waitFor(wait)
-    data = await page.evaluate(evaluate)
-    await browser.close()
+def crawl(url, evaluate, wait = 0):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            handle_sigint  = False,
+            handle_sigterm = False,
+            handle_sighup  = False
+        )
+        page = browser.new_page()
+        page.goto(url)
+        if wait:
+            page.wait_for_timeout(wait)
+        data = page.evaluate(evaluate)
+        browser.close()
     return data
 
 app = Flask(__name__)
@@ -137,34 +136,34 @@ def crawl_all():
         for i in ksy_watch_list:
             print(i)
             url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{i}/pdp.open/{i}"
-            result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ksy, wait = 3000))
+            result = crawl(url, eval_ksy, wait = 3000)
             update_list('KSY', i, url, result)
         for i in ssci_watch_list:
             print(i)
             url = f"https://www.switch-science.com/products/{i}"
-            result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ssci))
+            result = crawl(url, eval_ssci)
             update_list('Switch Science', i, url, result)
         return "OK", 200
     except:
         return "Error at %s"%i, 500
 
-#@app.route("/crawl/ksy/<int:product_id>", methods=["GET"])
-#def ksy(product_id):
-#    if not product_id in ksy_watch_list:
-#        return "It doesn't watching.", 400
-#    url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{product_id}/pdp.open/{product_id}"
-#    result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ksy, wait = 3000))
-#    update_list('KSY', product_id, url, result)
-#    return jsonify(result), 200
-#
-#@app.route("/crawl/ssci/<int:product_id>", methods=["GET"])
-#def ssci(product_id):
-#    if not product_id in ssci_watch_list:
-#        return "It doesn't watching.", 400
-#    url = f"https://www.switch-science.com/products/{product_id}"
-#    result = asyncio.new_event_loop().run_until_complete(crawl(url, eval_ssci))
-#    update_list('Switch Science', product_id, url, result)
-#    return jsonify(result), 200
+@app.route("/crawl/ksy/<int:product_id>", methods=["GET"])
+def ksy(product_id):
+    if not product_id in ksy_watch_list:
+        return "It doesn't watching.", 400
+    url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{product_id}/pdp.open/{product_id}"
+    result = crawl(url, eval_ksy, wait = 3000)
+    update_list('KSY', product_id, url, result)
+    return jsonify(result), 200
+
+@app.route("/crawl/ssci/<int:product_id>", methods=["GET"])
+def ssci(product_id):
+    if not product_id in ssci_watch_list:
+        return "It doesn't watching.", 400
+    url = f"https://www.switch-science.com/products/{product_id}"
+    result = crawl(url, eval_ssci)
+    update_list('Switch Science', product_id, url, result)
+    return jsonify(result), 200
 
 if __name__ == "__main__":
     app.run(debug=False, host='0.0.0.0', port=31415, threaded=True)
