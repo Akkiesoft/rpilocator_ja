@@ -38,6 +38,8 @@
 
   <div class="container">
     <h2 class="mt-5">ヘルプ</h2>
+    <h3>なにこれ</h3>
+    <p>日本のRaspberry Pi Approved Resellerである、KSYさんとスイッチサイエンスさんのRaspberry Pi在庫を確認するページです。<a href="https://rpilocator.com/" target="_blank" rel="noopener">rpilocator</a>が対応していないので自分で作りました。海外のストアを見たい場合はrpilocatorを利用してください</p>
     <h3>監視対象モデルについて</h3>
     <ul><li>Raspberry Pi Zero (V1.3, W, WH, 2W)</li>
         <li>Raspberry Pi 3+ (B, A)</li>
@@ -47,15 +49,19 @@
     <p>半日に一回くらいでチェックしています</p>
     <h3>表の生データがほしい</h3>
     <p><a href="rpilocator_ja.json">JSONはこちら</a></p>
+    <h3>rpilocatorのあの機能がほしい</h3>
+    <p>わたしはいらない</p>
+    <h3>他の日本のショップも対応してほしい</h3>
+    <p>Raspberry Pi Approved Reseller以外の対応予定はありません</p>
     <h3>サービスの提供期間</h3>
     <p>どのモデルも在庫が潤沢になるか、両社からデータ収集を断られるか、本家のrpilocatorで両社のデータ収集に対応するかのいずれかがあった場合終了します</p>
     <h3>問い合わせ先</h3>
-    <p><a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">Mastodon</a>か<a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">Twitter</a>へ</p>
+    <p><a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">Mastodon</a>か<a href="https://twitter.com/@akkiesoft" target="_blank" rel="noopener">Twitter</a>へ</p>
   </div>
 
   <div class="container">
       <footer class="pt-4 px-3 px-md-0 my-2 text-muted border-top">
-      <p>Inspired from <a href="https://rpilocator.com/" target="_blank" rel="noopener">rpilocator</a>.</p>
+      <p>Inspired by <a href="https://rpilocator.com/" target="_blank" rel="noopener">rpilocator</a>.</p>
       <p><a href="https://social.mikutter.hachune.net/@akkiesoft" target="_blank" rel="noopener">@Akkiesoft</a></p>
     </footer>
   </div>
@@ -64,8 +70,11 @@
 let table = new DataTable('#locator_ja', {
     responsive: true,
     pageLength: 50,
+    language: {
+        decimal: ','
+    },
     ajax: {
-        url: 'http://192.168.29.113:31415/',
+        url: './rpilocator_ja.json',
         dataSrc: function(d) {
              for (var i = 0 ; i < d.data.length ; i++ ) {
                  d.data[i][2] = '<a href="' + d.data[i][2] + '" target="_blank" rel="nooperner">Link</a>';
