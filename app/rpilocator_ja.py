@@ -40,6 +40,7 @@ ksy_watch_list = [
     512, # 3A+
     435, # 3B+
     779, # 3B+/Element14
+    497, # 4B 2GB
     723, # 4B 4GB/Element14
     552, # 4B 8GB/Element14
     498, # 4B 4GB
