@@ -86,7 +86,7 @@ def update_list(vendor, pid, url, info):
             # 既存のやつを消す
             data['data'].pop(c)
             break
-    # 具体的な在庫数は求めないため、Booleanにする
+    # 具体的な在庫数は求めないため、Yes/Noにする
     stock = "No"
     last_stock = ""
     if 'stock' in info and int(info['stock']):
@@ -124,6 +124,18 @@ def crawl(url, evaluate, wait = 0):
         browser.close()
     return data
 
+def crawl_ksy(i):
+    url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{i}/pdp.open/{i}"
+    result = crawl(url, eval_ksy, wait = 3000)
+    update_list('KSY', i, url, result)
+    return result
+
+def crawl_ssci(i):
+    url = f"https://www.switch-science.com/products/{i}"
+    result = crawl(url, eval_ssci)
+    update_list('Switch Science', i, url, result)
+    return result
+
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
@@ -138,15 +150,9 @@ def return_json():
 def crawl_all():
     try:
         for i in ksy_watch_list:
-            print(i)
-            url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{i}/pdp.open/{i}"
-            result = crawl(url, eval_ksy, wait = 3000)
-            update_list('KSY', i, url, result)
+            crawl_ksy(i)
         for i in ssci_watch_list:
-            print(i)
-            url = f"https://www.switch-science.com/products/{i}"
-            result = crawl(url, eval_ssci)
-            update_list('Switch Science', i, url, result)
+            crawl_ssci(i)
         return "OK", 200
     except:
         return "Error at %s"%i, 500
@@ -155,18 +161,14 @@ def crawl_all():
 def ksy(product_id):
     if not product_id in ksy_watch_list:
         return "It doesn't watching.", 400
-    url = f"https://raspberry-pi.ksyic.com/main/index/pdp.id/{product_id}/pdp.open/{product_id}"
-    result = crawl(url, eval_ksy, wait = 3000)
-    update_list('KSY', product_id, url, result)
+    result = crawl_ksy(product_id)
     return jsonify(result), 200
 
 @app.route("/crawl/ssci/<int:product_id>", methods=["GET"])
 def ssci(product_id):
     if not product_id in ssci_watch_list:
         return "It doesn't watching.", 400
-    url = f"https://www.switch-science.com/products/{product_id}"
-    result = crawl(url, eval_ssci)
-    update_list('Switch Science', product_id, url, result)
+    result = crawl_ssci(product_id)
     return jsonify(result), 200
 
 if __name__ == "__main__":
