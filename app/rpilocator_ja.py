@@ -84,14 +84,18 @@ def update_list(vendor, pid, url, info):
     for c,i in enumerate(data['data']):
         if i[3] == vendor and i[7] == pid:
             # 既存のやつを消す
-            data['data'].pop(c)
+            backup = data['data'].pop(c)
             break
     # 具体的な在庫数は求めないため、Yes/Noにする
-    stock = "No"
     last_stock = ""
     if 'stock' in info and int(info['stock']):
         stock = "Yes"
         last_stock = time.strftime("%Y-%m-%d")
+        price = info['price']
+    else:
+        stock = "No"
+        last_stock = backup[5]
+        price = backup[6]
     data['data'].append([
         info['product_code'],
         product_description[info['product_code']],
@@ -99,7 +103,7 @@ def update_list(vendor, pid, url, info):
         vendor,
         stock,
         last_stock,
-        info['price'],
+        price,
         pid
     ])
     output = json.dumps(data)
