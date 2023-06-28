@@ -88,7 +88,10 @@ def update_list(vendor, pid, url, info):
             break
     # 具体的な在庫数は求めないため、Yes/Noにする
     last_stock = ""
-    if 'stock' in info and int(info['stock']):
+    stock_count = 0
+    if 'stock' in info:
+        stock_count = int(info['stock'].replace('+', ''))
+    if stock_count:
         stock = "Yes"
         last_stock = time.strftime("%Y-%m-%d")
         price = info['price']
