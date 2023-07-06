@@ -89,7 +89,7 @@ def update_list(vendor, pid, url, info):
     # 具体的な在庫数は求めないため、Yes/Noにする
     last_stock = ""
     stock_count = 0
-    if 'stock' in info:
+    if 'stock' in info and info['stock']:
         stock_count = int(info['stock'].replace('+', ''))
     if stock_count:
         stock = "Yes"
