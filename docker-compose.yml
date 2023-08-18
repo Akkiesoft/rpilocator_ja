@@ -2,6 +2,7 @@ version: '3'
 services:
   rpilocator_ja:
     build: .
+    init: true
     restart: always
     volumes:
       - ./rpilocator_ja.json:/usr/src/app/rpilocator_ja.json

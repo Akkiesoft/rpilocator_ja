@@ -118,7 +118,7 @@ def crawl(url, evaluate, wait = 0):
         browser = p.chromium.launch(
             executable_path='/usr/bin/google-chrome-stable',
             headless=True,
-            args=['--no-sandbox'],
+            args=['--no-sandbox', '--no-zygote'],
             handle_sigint  = False,
             handle_sigterm = False,
             handle_sighup  = False
@@ -128,6 +128,7 @@ def crawl(url, evaluate, wait = 0):
         if wait:
             page.wait_for_timeout(wait)
         data = page.evaluate(evaluate)
+        page.close()
         browser.close()
     return data
 
