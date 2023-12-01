@@ -23,7 +23,7 @@ product_description = {
     "RASPIZWHSC0065": "Raspberry Pi Zero WH",
     "SC0510": "Raspberry Pi Zero 2 W",
     "RASPI3A1811853": "Raspberry Pi 3 Model A+ 512MB RAM",
-    "137-3331": "Raspberry Pi 3 Model B+ 1GB RAM",
+    "RASPI3PSC0073": "Raspberry Pi 3 Model B+ 1GB RAM",
     "2842228": "Raspberry Pi 3 Model B+ 1GB RAM",
     "RASPI421874652": "Raspberry Pi 4 Model B 2GB RAM",
     "RASPI44SC0194#": "Raspberry Pi 4 Model B 4GB RAM",
@@ -101,7 +101,7 @@ def update_list(vendor, pid, url, info):
         price = backup[6]
     data['data'].append([
         info['product_code'],
-        product_description[info['product_code']],
+        product_description[info['product_code']] if info['product_code'] in product_description else info['product_code'],
         url,
         vendor,
         stock,
