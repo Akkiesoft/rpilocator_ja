@@ -156,14 +156,24 @@ def return_json():
 
 @app.route("/crawl/all", methods=["GET"])
 def crawl_all():
-    try:
-        for i in ksy_watch_list:
-            crawl_ksy(i)
-        for i in ssci_watch_list:
+    result = ""
+    for i in ssci_watch_list:
+        try:
             crawl_ssci(i)
+            time.sleep(10)
+        except:
+            result += "Error at %s\n"%i
+    for i in ksy_watch_list:
+        try:
+            crawl_ksy(i)
+            time.sleep(10)
+        except:
+            result += "Error at %s\n"%i
+    if result:
+        print(result)
+        return result, 500
+    else:
         return "OK", 200
-    except:
-        return "Error at %s"%i, 500
 
 @app.route("/crawl/ksy/<int:product_id>", methods=["GET"])
 def ksy(product_id):
