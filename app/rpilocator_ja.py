@@ -17,6 +17,8 @@ product_description = {
     "RASPBERRY-PI-4-MODEL-B-2GB": "Raspberry Pi 4 Model B 2GB RAM",
     "ELEMENT14-3051891": "Raspberry Pi 4 Model B 4GB RAM",
     "RASPBERRY-PI-4-MODEL-B-8GB": "Raspberry Pi 4 Model B 8GB RAM",
+    "RPI-SC1111": "Raspberry Pi 5 4GB RAM",
+    "RPI-SC1112": "Raspberry Pi 5 8GB RAM",
     # ksy
     "RASPIZERO13": "Raspberry Pi Zero v1.3",
     "RASPI0W11": "Raspberry Pi Zero W",
@@ -30,6 +32,12 @@ product_description = {
     "RASPI483051891": "Raspberry Pi 4 Model B 4GB RAM",
     "3369503": "Raspberry Pi 4 Model B 8GB RAM",
     "RASPI48SC0195#": "Raspberry Pi 4 Model B 8GB RAM",
+    "SC0192": "Raspberry Pi 4 Model B 1GB RAM",
+    "SC0193": "Raspberry Pi 4 Model B 2GB RAM",
+    "SC0194": "Raspberry Pi 4 Model B 4GB RAM",
+    "SC0195": "Raspberry Pi 4 Model B 8GB RAM",
+    "SC1111": "Raspberry Pi 5 4GB RAM",
+    "SC1112": "Raspberry Pi 5 8GB RAM",
 }
 
 ksy_watch_list = [
@@ -40,11 +48,14 @@ ksy_watch_list = [
     512, # 3A+
     435, # 3B+
     779, # 3B+/Element14
+    483, # 4B 1GB
     497, # 4B 2GB
     723, # 4B 4GB/Element14
     552, # 4B 8GB/Element14
     498, # 4B 4GB
-    549 # 4B 8GB
+    549, # 4B 8GB
+    1015, # 5 4GB
+    1016, # 5 8GB
 ]
 eval_ksy = """() => {
     let price_length = document.getElementById('dt_Price').innerText.length - 1;
@@ -65,6 +76,8 @@ ssci_watch_list = [
     5681, # 4B 2GB
     5680, # 4B 4GB/Element14
     6370, # 4B 8GB
+    9249, # 5 4GB
+    9250, # 5 8GB
 ]
 eval_ssci = """() => {
     return {
