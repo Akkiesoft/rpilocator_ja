@@ -26,12 +26,6 @@ product_description = {
     "SC0510": "Raspberry Pi Zero 2 W",
     "RASPI3A1811853": "Raspberry Pi 3 Model A+ 512MB RAM",
     "RASPI3PSC0073": "Raspberry Pi 3 Model B+ 1GB RAM",
-    "2842228": "Raspberry Pi 3 Model B+ 1GB RAM",
-    "RASPI421874652": "Raspberry Pi 4 Model B 2GB RAM",
-    "RASPI44SC0194#": "Raspberry Pi 4 Model B 4GB RAM",
-    "RASPI483051891": "Raspberry Pi 4 Model B 4GB RAM",
-    "3369503": "Raspberry Pi 4 Model B 8GB RAM",
-    "RASPI48SC0195#": "Raspberry Pi 4 Model B 8GB RAM",
     "SC0192": "Raspberry Pi 4 Model B 1GB RAM",
     "SC0193": "Raspberry Pi 4 Model B 2GB RAM",
     "SC0194": "Raspberry Pi 4 Model B 4GB RAM",
@@ -47,13 +41,10 @@ ksy_watch_list = [
     849, # Zero 2W
     512, # 3A+
     435, # 3B+
-    779, # 3B+/Element14
     483, # 4B 1GB
     497, # 4B 2GB
     723, # 4B 4GB/Element14
     552, # 4B 8GB/Element14
-    498, # 4B 4GB
-    549, # 4B 8GB
     1015, # 5 4GB
     1016, # 5 8GB
 ]
