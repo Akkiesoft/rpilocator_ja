@@ -17,8 +17,11 @@ product_description = {
     "RASPBERRY-PI-4-MODEL-B-2GB": "Raspberry Pi 4 Model B 2GB RAM",
     "ELEMENT14-3051891": "Raspberry Pi 4 Model B 4GB RAM",
     "RASPBERRY-PI-4-MODEL-B-8GB": "Raspberry Pi 4 Model B 8GB RAM",
+    "RPI-SC1110": "Raspberry Pi 5 2GB RAM",
     "RPI-SC1111": "Raspberry Pi 5 4GB RAM",
     "RPI-SC1112": "Raspberry Pi 5 8GB RAM",
+    "RPI-SC1438": "Raspberry Pi AI Kit",
+    "RPI-SC1174": "Raspberry Pi AI Camera",
     # ksy
     "RASPIZERO13": "Raspberry Pi Zero v1.3",
     "RASPI0W11": "Raspberry Pi Zero W",
@@ -30,8 +33,11 @@ product_description = {
     "SC0193": "Raspberry Pi 4 Model B 2GB RAM",
     "SC0194": "Raspberry Pi 4 Model B 4GB RAM",
     "SC0195": "Raspberry Pi 4 Model B 8GB RAM",
+    "SC1110": "Raspberry Pi 5 2GB RAM",
     "SC1111": "Raspberry Pi 5 4GB RAM",
     "SC1112": "Raspberry Pi 5 8GB RAM",
+    "SC1438": "Raspberry Pi AI Kit",
+    "SC1174": "Raspberry Pi AI Camera",
 }
 
 ksy_watch_list = [
@@ -45,8 +51,11 @@ ksy_watch_list = [
     497, # 4B 2GB
     723, # 4B 4GB/Element14
     552, # 4B 8GB/Element14
+    1095, # 5 2GB
     1015, # 5 4GB
     1016, # 5 8GB
+    1082, # AI Kit
+    1098, # AI Camera
 ]
 eval_ksy = """() => {
     let price_length = document.getElementById('dt_Price').innerText.length - 1;
@@ -67,13 +76,16 @@ ssci_watch_list = [
     5681, # 4B 2GB
     5680, # 4B 4GB/Element14
     6370, # 4B 8GB
+    9810, # 5 2GB
     9249, # 5 4GB
     9250, # 5 8GB
+    9695, # AI Kit
+    9813, # AI Camera
 ]
 eval_ssci = """() => {
     return {
-        product_code: document.getElementsByClassName('product-details__block')[6].innerText.split(': ')[1],
-        stock: document.getElementsByClassName('product-details__block')[8].innerText.split(': ')[1],
+        product_code: document.getElementsByClassName('product-block--item-code')[0].innerText.split(': ')[1],
+        stock: document.getElementsByClassName('product-block--stock')[0].innerText.split(': ')[1],
         price: document.getElementsByClassName('money')[0].innerText.substring(1).trim().replace(',', ''),
     }
 }"""
@@ -85,6 +97,7 @@ def load_list():
 
 def update_list(vendor, pid, url, info):
     data = load_list()
+    backup = []
     for c,i in enumerate(data['data']):
         if i[3] == vendor and i[7] == pid:
             # 既存のやつを消す
@@ -101,8 +114,12 @@ def update_list(vendor, pid, url, info):
         price = info['price']
     else:
         stock = "No"
-        last_stock = backup[5]
-        price = backup[6]
+        if len(backup):
+            last_stock = backup[5]
+            price = backup[6]
+        else:
+            last_stock = ""
+            price = info['price'] if 'price' in info else ""
     data['data'].append([
         info['product_code'],
         product_description[info['product_code']] if info['product_code'] in product_description else info['product_code'],
