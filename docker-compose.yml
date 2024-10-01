@@ -1,4 +1,3 @@
-version: '3'
 services:
   rpilocator_ja:
     build: .
