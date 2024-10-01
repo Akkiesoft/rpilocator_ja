@@ -86,7 +86,7 @@ eval_ssci = """() => {
     return {
         product_code: document.getElementsByClassName('product-block--item-code')[0].innerText.split(': ')[1],
         stock: document.getElementsByClassName('product-block--stock')[0].innerText.split(': ')[1],
-        price: document.getElementsByClassName('money')[0].innerText.substring(1).trim().replace(',', ''),
+        price: document.getElementsByClassName('product-block--price')[0].innerText.substring(1).trim().replace(',', '').split(' ')[0]
     }
 }"""
 
