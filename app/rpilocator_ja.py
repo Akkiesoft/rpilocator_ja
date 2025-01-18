@@ -20,7 +20,8 @@ product_description = {
     "RPI-SC1110": "Raspberry Pi 5 2GB RAM",
     "RPI-SC1111": "Raspberry Pi 5 4GB RAM",
     "RPI-SC1112": "Raspberry Pi 5 8GB RAM",
-    "RPI-SC1438": "Raspberry Pi AI Kit",
+    "RPI-SC1113": "Raspberry Pi 5 16GB RAM",
+    "RPI-SC1430": "Raspberry Pi AI HAT+ 13TOPS",
     "RPI-SC1174": "Raspberry Pi AI Camera",
     # ksy
     "RASPIZERO13": "Raspberry Pi Zero v1.3",
@@ -36,7 +37,8 @@ product_description = {
     "SC1110": "Raspberry Pi 5 2GB RAM",
     "SC1111": "Raspberry Pi 5 4GB RAM",
     "SC1112": "Raspberry Pi 5 8GB RAM",
-    "SC1438": "Raspberry Pi AI Kit",
+    "SC1113": "Raspberry Pi 5 16GB RAM",
+    "SC1785": "Raspberry Pi AI HAT+ 13TOPS",
     "SC1174": "Raspberry Pi AI Camera",
 }
 
@@ -54,7 +56,8 @@ ksy_watch_list = [
     1095, # 5 2GB
     1015, # 5 4GB
     1016, # 5 8GB
-    1082, # AI Kit
+    1157, # 5 16GB
+    1114, # AI HAT+ 13TOPS
     1098, # AI Camera
 ]
 eval_ksy = """() => {
@@ -79,7 +82,8 @@ ssci_watch_list = [
     9810, # 5 2GB
     9249, # 5 4GB
     9250, # 5 8GB
-    9695, # AI Kit
+    10055, # 5 8GB
+    9998, # AI HAT+ 13TOPS
     9813, # AI Camera
 ]
 eval_ssci = """() => {
