@@ -141,7 +141,7 @@ def update_list(vendor, pid, url, info):
 def crawl(url, evaluate, wait = 0):
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            executable_path='/usr/bin/google-chrome-stable',
+            executable_path='/usr/bin/chromium',
             headless=True,
             args=['--no-sandbox', '--no-zygote'],
             handle_sigint  = False,
